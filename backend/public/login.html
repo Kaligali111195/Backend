@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-form">
+            <h2 class="text-center mb-4">Login</h2>
+            <form id="login-form">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+                <p class="text-center mt-3">
+                    Don't have an account? <a href="signup.html">Sign Up</a>
+                </p>
+                <div id="error-message" class="text-danger mt-3" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('https://backend-l2sh.onrender.com/login', {
+                    method: 'POST',
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const result = await response.json();
+                console.log('Server Response:', result);
+
+                if (response.ok) {
+                    alert("Login successful!");
+                    localStorage.setItem("token", result.token); // Store token
+                    window.location.href = "index.html"; // Redirect after successful login
+                } else {
+                    const errorMessage = document.getElementById('error-message');
+                    errorMessage.textContent = result.message || "Login failed!";
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Server error. Please try again.");
+            }
+        });
+    </script>
+</body>
+</html>

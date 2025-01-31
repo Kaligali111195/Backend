@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foodie - Menu</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f8f9fa;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 220px;
+      background-color: #343a40;
+      padding-top: 20px;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+    .sidebar a {
+      display: block;
+      color: white;
+      padding: 10px 15px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .sidebar a:hover {
+      background-color: #575d63;
+    }
+    .content {
+      margin-left: 240px;
+      padding: 20px;
+    }
+    .card {
+      border: none;
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: scale(1.05);
+    }
+    .card-title {
+      font-size: 1.25rem;
+      color: #495057;
+    }
+    .card-text {
+      font-size: 1rem;
+      color: #6c757d;
+    }
+    .btn-add-to-cart, .btn-remove {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      display: block;
+      margin: 10px auto;
+      border-radius: 5px;
+    }
+    .btn-add-to-cart:hover, .btn-remove:hover {
+      background-color: #0056b3;
+    }
+    .cart-container {
+      position: fixed;
+      top: 0;
+      right: -320px;
+      height: 100%;
+      width: 320px;
+      background-color: #f8f9fa;
+      padding: 20px;
+      overflow-y: auto;
+      border-left: 1px solid #ddd;
+      z-index: 1000;
+      transition: right 0.3s ease;
+    }
+    .cart-container.open {
+      right: 0;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .cart-item p {
+      margin: 0;
+      flex: 1;
+    }
+    .total-price {
+      font-weight: bold;
+      text-align: center;
+      margin-top: 20px;
+      font-size: 1.2rem;
+    }
+    .btn-checkout {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      display: block;
+      margin: 20px auto;
+      border-radius: 5px;
+    }
+    .btn-checkout:hover {
+      background-color: #218838;
+    }
+    .btn-remove {
+      margin-left: 10px;
+    }
+    .form-select {
+      margin-bottom: 10px;
+    }
+    .btn-cart-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      z-index: 1001;
+      display: flex;
+      align-items: center;
+    }
+    .btn-cart-toggle:hover {
+      background-color: #0056b3;
+    }
+    .cart-count {
+      background-color: red;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 0.8rem;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <a href="#pizza">Pizza</a>
+    <a href="#burger">Burger</a>
+    <a href="#rice">Rice</a>
+    <a href="#coffee">Coffee</a>
+    <a href="#tea">Tea</a>
+    <a href="#cuisine">Cuisine</a>
+  </div>
+  <button class="btn-cart-toggle" onclick="toggleCart()">Cart <span id="cart-count" class="cart-count">0</span></button>
+  <div class="cart-container" id="cart-container">
+    <h2 class="text-center">Cart</h2>
+    <div id="cart-items"></div>
+    <div id="total-price" class="total-price"></div>
+    <button class="btn-checkout" onclick="proceedToCheckout()">Proceed to Checkout</button>
+  </div>
+  <div class="content">
+    <section id="pizza" class="menu-section py-5 bg-light">
+      <div class="container">
+        <h2 class="text-center mb-5 text-primary">Pizza</h2>
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/pizza1.jpg" class="card-img-top" alt="Pizza 1">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Margherita Pizza</h5>
+                <p class="card-text text-muted">$10.99</p>
+                <select id="option-margherita" class="form-select">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Margherita Pizza', 10.99, 'option-margherita')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/pizza2.jpg" class="card-img-top" alt="Pizza 2">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Pepperoni Pizza</h5>
+                <p class="card-text text-muted">$12.99</p>
+                <select id="option-pepperoni" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Pepperoni Pizza', 12.99, 'option-pepperoni')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/pizza3.jpg" class="card-img-top" alt="Pizza 3">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">BBQ Chicken Pizza</h5>
+                <p class="card-text text-muted">$14.99</p>
+                <select id="option-bbq-chicken" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('BBQ Chicken Pizza', 14.99, 'option-bbq-chicken')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/pizza4.jpg" class="card-img-top" alt="Pizza 4">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Veggie Pizza</h5>
+                <p class="card-text text-muted">$11.99</p>
+                <select id="option-veggie" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Veggie Pizza', 11.99, 'option-veggie')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/pizza5.jpg" class="card-img-top" alt="Pizza 5">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Hawaiian Pizza</h5>
+                <p class="card-text text-muted">$13.99</p>
+                <select id="option-hawaiian" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Hawaiian Pizza', 13.99, 'option-hawaiian')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="burger" class="menu-section py-5 bg-light">
+      <div class="container">
+        <h2 class="text-center mb-5 text-primary">Burger</h2>
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/burger1.jpg" class="card-img-top" alt="Burger 1">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Classic Burger</h5>
+                <p class="card-text text-muted">$8.99</p>
+                <select id="option-classic" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Classic Burger', 8.99, 'option-classic')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/burger2.jpg" class="card-img-top" alt="Burger 2">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Cheese Burger</h5>
+                <p class="card-text text-muted">$9.99</p>
+                <select id="option-cheese" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Cheese Burger', 9.99, 'option-cheese')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/burger3.jpg" class="card-img-top" alt="Burger 3">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Bacon Burger</h5>
+                <p class="card-text text-muted">$10.99</p>
+                <select id="option-bacon" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Bacon Burger', 10.99, 'option-bacon')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/burger4.jpg" class="card-img-top" alt="Burger 4">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Veggie Burger</h5>
+                <p class="card-text text-muted">$7.99</p>
+                <select id="option-veggie-burger" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Veggie Burger', 7.99, 'option-veggie-burger')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/burger5.jpg" class="card-img-top" alt="Burger 5">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Spicy Burger</h5>
+                <p class="card-text text-muted">$9.49</p>
+                <select id="option-spicy" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Spicy Burger', 9.49, 'option-spicy')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="rice" class="menu-section py-5 bg-light">
+      <div class="container">
+        <h2 class="text-center mb-5 text-primary">Rice</h2>
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/rice1.jpg" class="card-img-top" alt="Rice 1">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Fried Rice</h5>
+                <p class="card-text text-muted">$6.99</p>
+                <select id="option-fried" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Fried Rice', 6.99, 'option-fried')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/rice2.jpg" class="card-img-top" alt="Rice 2">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Biryani</h5>
+                <p class="card-text text-muted">$7.99</p>
+                <select id="option-biryani" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Biryani', 7.99, 'option-biryani')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/rice3.jpg" class="card-img-top" alt="Rice 3">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Pilaf</h5>
+                <p class="card-text text-muted">$8.49</p>
+                <select id="option-pilaf" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Pilaf', 8.49, 'option-pilaf')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/rice4.jpg" class="card-img-top" alt="Rice 4">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Jollof Rice</h5>
+                <p class="card-text text-muted">$7.49</p>
+                <select id="option-jollof" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Jollof Rice', 7.49, 'option-jollof')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/rice5.jpg" class="card-img-top" alt="Rice 5">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Sushi Rice</h5>
+                <p class="card-text text-muted">$9.99</p>
+                <select id="option-sushi" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Sushi Rice', 9.99, 'option-sushi')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="coffee" class="menu-section py-5 bg-light">
+      <div class="container">
+        <h2 class="text-center mb-5 text-primary">Coffee</h2>
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/coffee1.jpg" class="card-img-top" alt="Coffee 1">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Espresso</h5>
+                <p class="card-text text-muted">$3.99</p>
+                <select id="option-espresso" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Espresso', 3.99, 'option-espresso')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/coffee2.jpg" class="card-img-top" alt="Coffee 2">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Latte</h5>
+                <p class="card-text text-muted">$4.99</p>
+                <select id="option-latte" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Latte', 4.99, 'option-latte')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/coffee3.jpg" class="card-img-top" alt="Coffee 3">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Cappuccino</h5>
+                <p class="card-text text-muted">$4.49</p>
+                <select id="option-cappuccino" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Cappuccino', 4.49, 'option-cappuccino')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/coffee4.jpg" class="card-img-top" alt="Coffee 4">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Americano</h5>
+                <p class="card-text text-muted">$3.49</p>
+                <select id="option-americano" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Americano', 3.49, 'option-americano')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/coffee5.jpg" class="card-img-top" alt="Coffee 5">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Mocha</h5>
+                <p class="card-text text-muted">$5.49</p>
+                <select id="option-mocha" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Mocha', 5.49, 'option-mocha')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="tea" class="menu-section py-5 bg-light">
+      <div class="container">
+        <h2 class="text-center mb-5 text-primary">Tea</h2>
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/tea1.jpg" class="card-img-top" alt="Tea 1">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Green Tea</h5>
+                <p class="card-text text-muted">$2.99</p>
+                <select id="option-green" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Green Tea', 2.99, 'option-green')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/tea2.jpg" class="card-img-top" alt="Tea 2">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Black Tea</h5>
+                <p class="card-text text-muted">$2.49</p>
+                <select id="option-black" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Black Tea', 2.49, 'option-black')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/tea3.jpg" class="card-img-top" alt="Tea 3">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Herbal Tea</h5>
+                <p class="card-text text-muted">$3.49</p>
+                <select id="option-herbal" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Herbal Tea', 3.49, 'option-herbal')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/tea4.jpg" class="card-img-top" alt="Tea 4">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Chai Tea</h5>
+                <p class="card-text text-muted">$3.99</p>
+                <select id="option-chai" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Chai Tea', 3.99, 'option-chai')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/tea5.jpg" class="card-img-top" alt="Tea 5">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Oolong Tea</h5>
+                <p class="card-text text-muted">$3.49</p>
+                <select id="option-oolong" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Oolong Tea', 3.49, 'option-oolong')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="cuisine" class="menu-section py-5 bg-light">
+      <div class="container">
+        <h2 class="text-center mb-5 text-primary">Cuisine</h2>
+        <div class="row">
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/cuisine1.jpg" class="card-img-top" alt="Cuisine 1">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Italian Cuisine</h5>
+                <p class="card-text text-muted">$15.99</p>
+                <select id="option-italian" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Italian Cuisine', 15.99, 'option-italian')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/cuisine2.jpg" class="card-img-top" alt="Cuisine 2">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Chinese Cuisine</h5>
+                <p class="card-text text-muted">$13.99</p>
+                <select id="option-chinese" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Chinese Cuisine', 13.99, 'option-chinese')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/cuisine3.jpg" class="card-img-top" alt="Cuisine 3">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Mexican Cuisine</h5>
+                <p class="card-text text-muted">$14.99</p>
+                <select id="option-mexican" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Mexican Cuisine', 14.99, 'option-mexican')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/cuisine4.jpg" class="card-img-top" alt="Cuisine 4">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">Indian Cuisine</h5>
+                <p class="card-text text-muted">$12.99</p>
+                <select id="option-indian" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('Indian Cuisine', 12.99, 'option-indian')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-4">
+            <div class="card shadow-sm">
+              <img src="/images/cuisine5.jpg" class="card-img-top" alt="Cuisine 5">
+              <div class="card-body">
+                <h5 class="card-title text-secondary">French Cuisine</h5>
+                <p class="card-text text-muted">$16.99</p>
+                <select id="option-french" class="form-select mb-2">
+                  <option value="dining">Dining</option>
+                  <option value="packed">Packed (+$0.50)</option>
+                </select>
+                <button class="btn-add-to-cart" onclick="addToCart('French Cuisine', 16.99, 'option-french')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <!-- Footer -->
+  <footer class="bg-dark text-white text-center py-3 mt-5" style="position: fixed; bottom: 0; width: 100%;">
+    <p style="margin: 0;">&copy; 2023 Foodie. All rights reserved.</p>
+  </footer>
+  <div style="height: 100px;"></div> <!-- Spacer to give space from above div to the footer -->
+  <script src="/js/script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("You must be logged in to access this page!");
+        window.location.href = "login.html"; // Redirect to login page
+      }
+    });
+
+    let cart = [];
+
+    function toggleCart() {
+      const cartContainer = document.getElementById('cart-container');
+      cartContainer.classList.toggle('open');
+    }
+
+    function addToCart(item, price, optionId) {
+      const option = document.getElementById(optionId).value;
+      const finalPrice = option === 'packed' ? price + 0.5 : price;
+      cart.push({ item, price: finalPrice, option });
+      renderCart();
+      updateCartCount();
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      renderCart();
+      updateCartCount();
+    }
+
+    function renderCart() {
+      const cartItems = document.getElementById('cart-items');
+      cartItems.innerHTML = '';
+      let totalPrice = 0;
+      let packedTax = 0;
+      cart.forEach((cartItem, index) => {
+        totalPrice += cartItem.price;
+        if (cartItem.option === 'packed') {
+          packedTax += 0.5;
+        }
+        const cartItemDiv = document.createElement('div');
+        cartItemDiv.className = 'cart-item';
+        cartItemDiv.innerHTML = `
+          <p>${cartItem.item} (${cartItem.option}) - $${cartItem.price.toFixed(2)}</p>
+          <button class="btn-remove" onclick="removeFromCart(${index})">Remove</button>
+        `;
+        cartItems.appendChild(cartItemDiv);
+      });
+      document.getElementById('total-price').innerText = `Total: $${totalPrice.toFixed(2)} (Packed Tax: $${packedTax.toFixed(2)})`;
+    }
+
+    function updateCartCount() {
+      const cartCount = document.getElementById('cart-count');
+      cartCount.innerText = cart.length;
+    }
+
+    function proceedToCheckout() {
+      if (cart.length === 0) {
+        alert('Your cart is empty.');
+        return;
+      }
+      alert('Proceeding to checkout...');
+      fetch('http://localhost:3000/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ cart })
+      }).then(response => {
+        if (response.ok) {
+          console.log('Checkout successful'); // Log success
+          // Clear the cart after checkout
+          cart = [];
+          renderCart();
+          updateCartCount();
+        } else {
+          console.log('Checkout failed'); // Log failure
+          alert('Failed to proceed to checkout.');
+        }
+      }).catch(error => {
+        console.error('Error:', error); // Log error
+        alert('Failed to proceed to checkout.');
+      });
+    }
+  </script>
+</body>
+</html>
